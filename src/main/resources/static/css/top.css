@@ -1,0 +1,101 @@
+.top {
+    margin: 0 auto;
+    padding: 0 auto;
+}
+
+.logo {
+    -webkit-transition: width 0.3s ease-in-out;
+    -o-transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out;
+    float: left;
+    height: 50px;
+    font-size: 20px;
+    line-height: 50px;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+    font-weight: 300;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    /*margin-left: 15px;*/
+    margin-top: -3px;
+    margin-bottom: 5px;
+    border-right: 1px solid #357194;
+    padding-right: 5px;
+}
+
+#image_lg {
+    height: 37px;
+    /*border-radius: 50%;*/
+    margin-top: 3px;
+    /*display: block;*/
+    margin-left: 6px;
+    float: left;
+}
+
+.logo .logo-lg {
+    /*display: block;*/
+}
+
+.name {
+    /*margin-right: 10px;*/
+    float: right;
+    margin-top: 17px;
+    margin-right: 10px;
+    font-size: 13px;
+    color: white;
+}
+
+#name :hover {
+    color: silver;
+    text-decoration: underline;
+}
+
+.name a {
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+ul#topnav {
+    margin: 0; padding: 0;
+    float: left;
+    width: 40%;
+    list-style: none;
+    position: relative;
+    font-size: 14px;
+    background:url(/images/topbg.png) repeat-x;
+}
+ul#topnav li {
+    float: left;
+    margin: 0; padding: 0;
+    border-right: 1px solid #357194;
+}
+ul#topnav li a {
+    padding: 14px 15px;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+}
+ul#topnav li:hover { background: #3c80a7  }
+
+
+ul#namenav {
+    margin: 0; padding: 0;
+    float: right;
+    width: 20%;
+    list-style: none;
+    position: relative;
+    font-size: 14px;
+    background:url(/images/topbg.png) repeat-x;
+}
+ul#namenav li {
+    float: right;
+    margin: 0; padding: 0;
+    /*border-right: 1px solid #357194;*/
+}
+ul#namenav li a {
+    padding: 14px 15px;
+    display: block;
+    color: #fff;
+    text-decoration: none;
+}
+ul#namenav li:hover { background: #3c80a7  }

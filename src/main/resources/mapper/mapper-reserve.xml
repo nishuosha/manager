@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--~
+  ~ Copyright (c) 2010-2015 meituan.com
+  ~ All rights reserved.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="reserve">
+
+    <insert id="insert" parameterType="com.chd.hao.manager.model.ReserveModel">
+
+        INSERT INTO `reserve` (createtime, reservetime, description,
+        <choose>
+            <when test="user!=null">
+                userid,
+            </when>
+            <when test="admin!=null">
+                adminid,
+            </when>
+        </choose>
+        parkid, parknum, status)
+        VALUES (#{createtime}, #{reservetime}, #{description},
+        <choose>
+            <when test="user!=null">
+                #{user.uid},
+            </when>
+            <when test="admin!=null">
+                #{admin.aid},
+            </when>
+        </choose>
+        #{park.id}, #{parknum}, #{status})
+
+    </insert>
+
+    <resultMap id="selectReserveWithPark" type="com.chd.hao.manager.model.ReserveModel">
+
+        <id column="rid" property="rid" />
+        <result column="createtime" property="createtime" />
+        <result column="reservetime" property="reservetime" />
+        <result column="rd" property="description" />
+        <result column="parknum" property="parknum" />
+        <result column="status" property="status" />
+
+        <association property="park" javaType="com.chd.hao.manager.model.ParkModel">
+            <id column="pid" property="pid" />
+            <result column="name" property="name" />
+            <result column="address"  property="address" />
+            <result column="pd" property="description" />
+        </association>
+
+
+    </resultMap>
+
+    <select id="selectUserReserve" parameterType="int" resultMap="selectReserveWithPark">
+
+        SELECT r.rid, r.createtime, r.reservetime, r.description rd, r.parknum, r.status,
+              p.pid, p.name, p.address, p.description pd FROM `reserve` r LEFT JOIN `park` p
+              ON r.parkid = p.pid WHERE r.userid = #{id}
+
+    </select>
+
+    <select id="selectAdminReserve" parameterType="int" resultMap="selectReserveWithPark">
+        SELECT r.rid, r.createtime, r.reservetime, r.description rd, r.parknum, r.status,
+              p.pid, p.name, p.address, p.description pd FROM `reserve` r LEFT JOIN `park` p
+              ON r.parkid = p.pid WHERE r.adminid = #{id}
+    </select>
+
+    <select id="selectNumByParkId" parameterType="map" resultType="int">
+        SELECT parknum FROM `reserve` WHERE parkid = #{id} AND reservetime = #{reservetime}
+    </select>
+
+    <select id="selectByUserId" parameterType="map" resultType="Integer">
+        SELECT rid FROM `reserve` WHERE userid = #{id} AND reservetime = #{reservetime}
+    </select>
+
+    <select id="selectByAdminId" parameterType="map" resultType="Integer">
+        SELECT rid FROM `reserve` WHERE adminid = #{id} AND reservetime = #{reservetime}
+    </select>
+
+    <delete id="delete" parameterType="int" >
+        DELETE FROM `reserve` WHERE rid = #{id}
+    </delete>
+
+    <delete id="deleteAll" >
+        DELETE FROM `reserve`
+    </delete>
+
+    <update id="update" parameterType="com.chd.hao.manager.model.ReserveModel" >
+
+    </update>
+
+    <update id="updateStatus" parameterType="map">
+        UPDATE `reserve` SET status = #{status} WHERE rid = #{id}
+    </update>
+    
+    <select id="selectOutOfDate" parameterType="String" resultType="int">
+
+        SELECT rid FROM `reserve` WHERE reservetime &lt; #{now} and status != '已过期'
+
+    </select>
+
+    <select id="selectById" parameterType="int" resultMap="selectReserveWithPark">
+        SELECT r.rid, r.createtime, r.reservetime, r.description rd, r.parknum, r.status,
+            p.pid, p.name, p.address, p.description pd FROM `reserve` r LEFT JOIN `park` p
+            ON r.parkid = p.pid WHERE r.rid = #{id}
+    </select>
+    
+</mapper>

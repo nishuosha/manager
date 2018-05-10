@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--~
+  ~ Copyright (c) 2010-2015 meituan.com
+  ~ All rights reserved.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin">
+
+    <select id="selectAll" resultType="com.chd.hao.manager.model.AdminModel">
+        SELECT * FROM `admin`
+    </select>
+
+    <select id="selectAllWithPark" resultMap="findAdminPark" >
+        <include refid="selectWithPark" />
+    </select>
+
+    <sql id="selectWithPark">
+        SELECT a.aid aid, a.adminName, a.adminpwd, a.phone, a.email, a.registertime, p.pid pid, p.name, p.address,
+               p.enterCount, p.length, p.width, p.count, p.time
+               from `admin` a LEFT JOIN `park` p ON a.aid = p.sponsor
+    </sql>
+    
+    <select id="selectByIdWithPark" parameterType="int" resultMap="findAdminPark">
+        <include refid="selectWithPark" />  WHERE a.aid = #{id}
+    </select>
+
+    <resultMap id="findAdminPark" type="com.chd.hao.manager.model.AdminModel">
+
+        <id column="aid" property="aid" />
+        <result column="adminName" property="adminName" />
+        <result column="adminpwd" property="adminpwd" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+        <result column="registertime" property="registertime" />
+        
+        <collection property="parks" ofType="com.chd.hao.manager.model.ParkModel">
+            <id column="pid" property="pid" />
+            <result column="name" property="name"/>
+            <result column="address" property="address"/>
+            <result column="enterCount" property="enterCount"/>
+            <result column="length" property="length"/>
+            <result column="width" property="width"/>
+            <result column="count" property="count"/>
+            <result column="time" property="time"/>
+        </collection>
+
+    </resultMap>
+
+    <select id="selectById" parameterType="int" resultType="com.chd.hao.manager.model.AdminModel">
+        SELECT * FROM `admin` WHERE aid = #{id}
+    </select>
+
+    <select id="selectByName" parameterType="String" resultType="com.chd.hao.manager.model.AdminModel">
+        SELECT * FROM `admin` WHERE adminName = #{adminName}
+    </select>
+
+    <select id="selectByNameWithPark" parameterType="String" resultMap="findAdminPark">
+        <include refid="selectWithPark" /> WHERE adminName = #{adminName}
+    </select>
+
+    <insert id="insert" parameterType="com.chd.hao.manager.model.AdminModel">
+        INSERT INTO `admin` (adminName, adminpwd, phone, email, registertime) VALUES (#{adminName}, #{adminpwd}, #{phone}, #{email}, #{registertime})
+    </insert>
+
+    <delete id="deleteById" parameterType="int" >
+        DELETE FROM `admin` WHERE aid = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.chd.hao.manager.model.AdminModel">
+        UPDATE `admin` SET adminName = #{adminName}, adminpwd = #{adminpwd}, phone = #{phone}, email = #{email} WHERE aid = #{id}
+    </update>
+
+    <select id="selectPwd" parameterType="String" resultType="String">
+        SELECT adminpwd FROM `admin` WHERE adminName = #{adminName}
+    </select>
+
+</mapper>

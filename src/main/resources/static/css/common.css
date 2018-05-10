@@ -1,0 +1,49 @@
+.td1 {
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+
+.td2 {
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.td3 {
+    word-wrap: break-word;
+}
+
+.td4 {
+    word-wrap: break-word;
+    word-break: break-all
+}
+
+.main {
+    margin: 11px;
+}
+
+.index {
+    background-color: #d9edf7;
+    padding: 8px 12px;
+    margin-bottom: 11px
+}
+
+.separate {
+    color: #cccccc
+}
+
+.mars-header {
+    margin-top: 0;
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.mars-nav-pills>li>a {
+    -webkit-border-radius:0;
+    -moz-border-radius:0;
+    border-radius:0;
+}
+
+.hidden {display: none;}

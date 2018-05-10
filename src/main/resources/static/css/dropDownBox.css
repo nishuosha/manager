@@ -1,0 +1,53 @@
+li{
+    list-style: none;
+}
+
+.selectListWrap {
+    background: #fff;
+    border-radius: 7px;
+    border: 1px solid #e5e5e5;
+}
+
+.selectListWrap li {
+    cursor: pointer;
+}
+
+.selectList,
+.selectPageLocation {
+    margin: 0;
+}
+
+.selectList li {
+    color: rgba(0, 0, 0, .65);
+    transition: background .3s ease;
+    padding: 5px 10px;
+}
+
+.selectList li:hover {
+    background: #e6f7ff;
+}
+
+.selectPageLocation {
+    width: 100%;
+    overflow: hidden;
+    padding: 10px
+}
+
+.selectPageLocation li {
+    font-size: 12px;
+    float: left;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    overflow: hidden;
+    background: #fff;
+    margin-right: 2px;
+    color: #444
+}
+
+.selectPageLocation .pageActive {
+    color: #fff;
+    background: #337ab7;
+    border-radius: 100%;
+}

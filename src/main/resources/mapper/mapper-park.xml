@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--~
+  ~ Copyright (c) 2010-2015 meituan.com
+  ~ All rights reserved.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="park">
+    
+    <resultMap id="findParkWithAdmin" type="com.chd.hao.manager.model.ParkModel">
+
+        <id column="pid" property="pid" />
+        <result column="name" property="name" />
+        <result column="address" property="address" />
+        <result column="enterCount" property="enterCount" />
+        <result column="length" property="length" />
+        <result column="width" property="width" />
+        <result column="count" property="count" />
+        <result column="time" property="time" />
+
+        <association property="sponsor" javaType="com.chd.hao.manager.model.AdminModel">
+            <id column="aid" property="aid" />
+            <result column="adminName" property="adminName" />
+            <result column="adminpwd" property="adminpwd" />
+            <result column="phone" property="phone" />
+            <result column="registertime" property="registertime" />
+        </association>
+
+    </resultMap>
+    
+    <sql id="selectWithAdmin" >
+        SELECT p.pid pid, p.name, p.address, p.enterCount, p.length, p.width, p.count, p.time,
+               a.aid aid, a.adminName, a.adminpwd, a.phone, a.registertime
+               FROM `park` p LEFT JOIN `admin` a ON p.sponsor = a.aid
+    </sql>
+
+    <select id="selectAll" resultType="com.chd.hao.manager.model.ParkModel">
+        SELECT * FROM `park`
+    </select>
+
+    <select id="selectAllWithAdmin" resultMap="findParkWithAdmin">
+        <include refid="selectWithAdmin" />
+    </select>
+
+    <select id="selectById" parameterType="int" resultType="com.chd.hao.manager.model.ParkModel">
+        SELECT * FROM `park` WHERE pid = #{id}
+    </select>
+
+    <select id="selectByIdWithAdmin" parameterType="int" resultMap="findParkWithAdmin" >
+        <include refid="selectWithAdmin" /> WHERE p.pid = #{id}
+    </select>
+
+    <select id="selectBySponsor" parameterType="int" resultType="com.chd.hao.manager.model.ParkModel">
+        SELECT * FROM `park` WHERE sponsor = #{id}
+    </select>
+
+    <select id="count" resultType="int" >
+        SELECT COUNT(*) FROM `park`;
+    </select>
+
+    <insert id="insert" parameterType="com.chd.hao.manager.model.ParkModel">
+        INSERT INTO `park` (name, address, enterCount, length, width, count, free, time, description, sponsor)
+                    VALUES (#{name}, #{address}, #{enterCount}, #{length}, #{width}, #{count}, #{free}, #{time}, #{description}, #{sponsor.id})
+    </insert>
+
+    <update id="update" parameterType="com.chd.hao.manager.model.ParkModel">
+        UPDATE `park` SET name = #{name}, address = #{address}, enterCount = #{enterCount}, length = #{length},
+                          width = #{width}, count = #{count}, description = #{description} WHERE pid = #{id}
+    </update>
+
+    <update id="updateFree" parameterType="map" >
+        UPDATE `park` SET free = #{free} WHERE pid = #{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM `park` WHERE pid = #{id}
+    </delete>
+
+    <select id="selectByCondition" parameterType="com.chd.hao.manager.model.ParkModel" resultMap="findParkWithAdmin">
+      <include refid="selectWithAdmin" />
+
+      <where>
+          <if test="name!=null and name!=''">
+              and p.name like '%${name}%'
+          </if>
+          <if test="address!=null and address!=''">
+              and p.address like '%${address}%'
+          </if>
+          <if test="enterCount!=null and enterCount!=''">
+              and p.enterCount = #{enterCount}
+          </if>
+          <if test="sponsor.adminName!=null and sponsor.adminName!=''">
+              and a.adminName = #{sponsor.adminName}
+          </if>
+      </where>
+
+    </select>
+
+</mapper>

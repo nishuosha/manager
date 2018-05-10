@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--~
+  ~ Copyright (c) 2010-2015 meituan.com
+  ~ All rights reserved.
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <setting name="cacheEnabled" value="false"/>
+    </settings>
+
+    <!--<plugins>-->
+    <!--<plugin interceptor="com.meituan.service.user.datasource.ExecutorUpdateMethodInterceptor"/>-->
+    <!--<plugin interceptor="com.meituan.service.user.datasource.AtlasForceMasterInterceptor"/>-->
+    <!--</plugins>-->
+
+    <mappers>
+        <mapper resource="mapper/mapper-user.xml" />
+        <mapper resource="mapper/mapper-admin.xml" />
+        <mapper resource="mapper/mapper-park.xml" />
+        <mapper resource="mapper/mapper-reserve.xml"/>
+    </mappers>
+
+</configuration>

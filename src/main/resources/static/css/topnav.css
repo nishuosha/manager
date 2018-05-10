@@ -1,0 +1,14 @@
+.about {
+    margin: auto;
+    width: 60%;
+    height:50%;
+    text-align: center;
+    border: 1px solid #f4f4f4;
+}
+
+.about p{
+    font-size: 15px;
+    font-family: "Microsoft Yahei", "Hiragino Sans GB", "Helvetica Neue", Arial, sans-serif;
+    color: #666;
+    line-height: 1.8;
+}
