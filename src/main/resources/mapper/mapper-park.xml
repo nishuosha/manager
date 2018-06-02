@@ -18,6 +18,7 @@
         <result column="width" property="width" />
         <result column="count" property="count" />
         <result column="time" property="time" />
+        <result column="description" property="description" />
 
         <association property="sponsor" javaType="com.chd.hao.manager.model.AdminModel">
             <id column="aid" property="aid" />
@@ -30,17 +31,19 @@
     </resultMap>
     
     <sql id="selectWithAdmin" >
-        SELECT p.pid pid, p.name, p.address, p.enterCount, p.length, p.width, p.count, p.time,
-               a.aid aid, a.adminName, a.adminpwd, a.phone, a.registertime
+        SELECT p.pid pid, p.name, p.address, p.enterCount, p.length, p.width, p.count, p.time, p.status,
+               p.description, a.aid aid, a.adminName, a.adminpwd, a.phone, a.registertime
                FROM `park` p LEFT JOIN `admin` a ON p.sponsor = a.aid
     </sql>
 
+    <!--只查询所有车库-->
     <select id="selectAll" resultType="com.chd.hao.manager.model.ParkModel">
-        SELECT * FROM `park`
+        SELECT * FROM `park` where status = 0
     </select>
 
+    <!--查询所有车库及其创建人信息-->
     <select id="selectAllWithAdmin" resultMap="findParkWithAdmin">
-        <include refid="selectWithAdmin" />
+        <include refid="selectWithAdmin" /> WHERE p.status = 0
     </select>
 
     <select id="selectById" parameterType="int" resultType="com.chd.hao.manager.model.ParkModel">
@@ -60,8 +63,8 @@
     </select>
 
     <insert id="insert" parameterType="com.chd.hao.manager.model.ParkModel">
-        INSERT INTO `park` (name, address, enterCount, length, width, count, free, time, description, sponsor)
-                    VALUES (#{name}, #{address}, #{enterCount}, #{length}, #{width}, #{count}, #{free}, #{time}, #{description}, #{sponsor.id})
+        INSERT INTO `park` (name, address, enterCount, length, width, count, free, time, description, status, sponsor)
+                    VALUES (#{name}, #{address}, #{enterCount}, #{length}, #{width}, #{count}, #{free}, #{time}, #{description}, #{status}, #{sponsor.id})
     </insert>
 
     <update id="update" parameterType="com.chd.hao.manager.model.ParkModel">
@@ -72,6 +75,12 @@
     <update id="updateFree" parameterType="map" >
         UPDATE `park` SET free = #{free} WHERE pid = #{id}
     </update>
+
+    <!--修改车库状态-->
+    <update id="updateStatus" parameterType="map" >
+        UPDATE `park` SET status = #{status} WHERE pid = #{id}
+    </update>
+
 
     <delete id="delete" parameterType="int">
         DELETE FROM `park` WHERE pid = #{id}
@@ -93,6 +102,9 @@
           <if test="sponsor.adminName!=null and sponsor.adminName!=''">
               and a.adminName = #{sponsor.adminName}
           </if>
+
+          AND p.status = 0
+
       </where>
 
     </select>

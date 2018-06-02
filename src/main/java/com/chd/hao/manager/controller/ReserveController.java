@@ -64,7 +64,7 @@ public class ReserveController {
         ParkModel pm = rm.getPark();
 
         String message = "您取消了预定的车位!" + "\n\n" + "车库名称：name" + "\n" + "车库地址：address" + "\n" +
-                "预定时间：reservetime" + "\n" + "车位编号：parknum";
+                "预定日期：reservetime" + "\n" + "车位编号：parknum";
 
 
         try {
@@ -85,7 +85,7 @@ public class ReserveController {
         return getNumBypid(pid, time);
     }
 
-
+    //根据车库id和预定时间获取空闲车位list
     public List<Integer> getNumBypid(int pid, String time) {
         List<Integer> parklist = reserveService.getNumByParkId(pid, time);
         ParkModel p = parkService.getById(pid);
@@ -94,23 +94,22 @@ public class ReserveController {
         return getFree(total, parklist);
     }
 
-
+    //获取空闲车位编号list
     public List<Integer> getFree(int total, List<Integer> reserved) {
         List<Integer> totalList = getTotalList(total);
         if(reserved.size() == 0) {
             return totalList;
         }
-
         List<Integer> result = new ArrayList<>();
         for(int i = 0 ; i < total ; i++) {
             if(!reserved.contains(i)) {
                 result.add(i);
             }
         }
-
         return result;
     }
 
+    //获取所有车位编号list
     public List<Integer> getTotalList(int total) {
         List<Integer> list = new ArrayList<>();
         for(int i = 0 ; i < total ; i++) {
@@ -150,7 +149,7 @@ public class ReserveController {
         String enterName = getMinEnter(p.getCoordinate(), model.getParknum(), p.getLength());
 
         String message = "您选择的车位预定成功!" + "\n\n" + "车库名称：name" + "\n" + "车库地址：address" + "\n" +
-                         "预定时间：reservetime" + "\n" + "车位编号：parknum" + "\n" + "最近入口：enterName";
+                         "预定日期：reservetime" + "\n" + "车位编号：parknum" + "\n" + "最近入口：enterName";
 
         model.setCreatetime(DateUtil.format(new Date()));
         model.setStatus("已预定");
@@ -215,10 +214,54 @@ public class ReserveController {
         return calculate(getFreeListCoor(freelist, p.getWidth(), p.getLength()), p.getLength(), p.getCoordinate());
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/remindFree", method = RequestMethod.GET)
+    public String remindFree(int pid, String time, HttpServletRequest request) {
+
+        Object o = request.getSession().getAttribute("user");
+        String to = "";
+        if(o instanceof AdminModel) {
+            to = ((AdminModel) o).getEmail();
+        } else {
+            to = ((UserModel) o).getEmail();
+        }
+
+        ParkModel pm = parkService.getById(pid);
+        int total = pm.getCount();
+
+
+        Timer timer = new Timer();
+        String finalTo = to;
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                List<Integer> reserveList = reserveService.getNumByParkId(pid, time);
+                if(reserveList.size() != total) {
+                    System.out.println("有空位了");
+
+                    try {
+                        MailUtil.sendMail(finalTo, "车位提醒", "车库名称: " + pm.getName() + "\n"
+                                        + "车库地址: " + pm.getAddress()  + "日期: " + time
+                                        + "\n" + "消息: 已有空余车位,请及时预定!");
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                        System.out.println("邮件发送失败!");
+                    }
+
+                    timer.cancel();
+                    return ;
+                }
+            }
+        };
+
+        timer.scheduleAtFixedRate(task, 1000*10, 1000*10);
+        return "";
+    }
+
+    //计算每个入口对应的最近的车位编号
     private Map<String, Integer> calculate(int[][] freeCoor, int length, Map<String, String> coordinate) {
 
         Map<String, Integer> rmap = new HashMap<>();
-
         Map<Integer, String> amap = new HashMap<>();
         Map<Integer, String> bmap = new HashMap<>();
         Map<Integer, String> cmap = new HashMap<>();
@@ -235,7 +278,6 @@ public class ReserveController {
                     if(coordinate.get("D") != null ) {
                         dmap.put(getDistance(i, j, coordinate.get("D")), i + "," + j);
                     }
-
                 }
             }
         }
@@ -247,10 +289,10 @@ public class ReserveController {
             rmap.put("D", getNumByCoor(dmap.get(getMinKey(dmap)), length));
         }
 
-
         return rmap;
     }
 
+    //获取最小的距离
     public Integer getMinKey(Map<Integer, String> map) {
         Set<Integer> keySet = map.keySet();
         Integer[] keys = new Integer[keySet.size()];
@@ -259,19 +301,21 @@ public class ReserveController {
         return keys[0];
     }
 
+    //根据坐标获取车位编号
     public Integer getNumByCoor(String coor, int length) {
         int x = Integer.valueOf(coor.split(",")[0]);
         int y = Integer.valueOf(coor.split(",")[1]);
         return x * length + y;
     }
 
+    //获取两个坐标之间的距离
     private int getDistance(int i, int j, String coor) {
         int x = Integer.valueOf(coor.split(",")[0]);
         int y = Integer.valueOf(coor.split(",")[1]);
         return Math.abs(y - j ) + Math.abs(x - i);
     }
 
-
+    //根据空闲车位list初始化二维数组每一项的值
     public int[][] getFreeListCoor(List<Integer> list, int width, int length) {
         int[][] coor = new int[width][length];
         for(int i = 0 ; i < list.size() ; i++) {
@@ -281,7 +325,6 @@ public class ReserveController {
             int w = j % length;
             coor[l][w] = 1;
         }
-
         return coor;
     }
 }

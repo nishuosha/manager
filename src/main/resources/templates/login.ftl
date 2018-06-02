@@ -55,6 +55,7 @@
                      if(ret == 'exist') {
                          alert("用户名已存在!");
                          return ;
+
                      } else {
 
                          $.ajax({
@@ -66,6 +67,7 @@
                                     alert("注册成功，请登陆!");
                                     $("#register").modal('hide');
                                     $("#login").modal();
+
                                 }
                              }
                          });

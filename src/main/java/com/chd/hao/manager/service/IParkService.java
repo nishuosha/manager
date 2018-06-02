@@ -20,6 +20,8 @@ public interface IParkService {
 
     public int update(ParkModel model);
 
+    public int updateStatus(int status, int pid);
+
     public int add(ParkModel model);
 
     public int delete(int id);

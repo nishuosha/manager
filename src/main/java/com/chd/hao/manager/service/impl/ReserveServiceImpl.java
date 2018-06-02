@@ -54,6 +54,11 @@ public class ReserveServiceImpl implements IReserveService {
     }
 
     @Override
+    public int deleteByParkId(int pid) {
+        return reserveDAO.deleteByParkId(pid);
+    }
+
+    @Override
     public int updateStatus(int rid, String status) {
         return reserveDAO.updateStatus(rid, status);
     }
@@ -66,5 +71,30 @@ public class ReserveServiceImpl implements IReserveService {
     @Override
     public ReserveModel selectById(int rid) {
         return reserveDAO.selectById(rid);
+    }
+
+    @Override
+    public List<Integer> getReservedId(int pid) {
+        return reserveDAO.getReservedId(pid);
+    }
+
+    @Override
+    public ReserveModel getReserveWithParkAndUser(int rid) {
+        return reserveDAO.getReserveWithParkAndUser(rid);
+    }
+
+    @Override
+    public ReserveModel getReserveWithParkAndAdmin(int rid) {
+        return reserveDAO.getReserveWithParkAndAdmin(rid);
+    }
+
+    @Override
+    public Integer getUserByRid(int rid) {
+        return reserveDAO.getUserByRid(rid);
+    }
+
+    @Override
+    public Integer getAdminByRid(int rid) {
+        return reserveDAO.getAdminByRid(rid);
     }
 }

@@ -59,6 +59,7 @@ public class LoginController {
 
     @RequestMapping(value = "/exit", method = RequestMethod.GET)
     public String exit(HttpServletRequest request){
+        //使session失效
         request.getSession().invalidate();
         return "redirect:/";
     }

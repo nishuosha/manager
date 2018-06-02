@@ -60,6 +60,14 @@ public class ParkDAOImpl implements IParkDAO {
     }
 
     @Override
+    public int updateStatus(int status, int pid) {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("status", status);
+        map.put("id", pid);
+        return sqlSessionTemplate.update("park.updateStatus", map);
+    }
+
+    @Override
     public int delete(int id) {
         return sqlSessionTemplate.delete("park.delete", id);
     }

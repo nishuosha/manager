@@ -19,13 +19,16 @@ public class FrameController {
 
         Object o = request.getSession().getAttribute("user");
 
+        //跳转至未登录的首页
         if(o == null) {
             return "noindex";
         }
 
         if(o instanceof AdminModel) {
+            //跳转至商家用户首页
             return "adminindex";
         } else {
+            //跳转至个人用户首页
             return "index";
         }
     }

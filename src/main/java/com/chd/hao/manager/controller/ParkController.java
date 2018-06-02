@@ -2,8 +2,11 @@ package com.chd.hao.manager.controller;
 
 import com.chd.hao.manager.model.AdminModel;
 import com.chd.hao.manager.model.ParkModel;
+import com.chd.hao.manager.model.ReserveModel;
 import com.chd.hao.manager.service.IParkService;
+import com.chd.hao.manager.service.IReserveService;
 import com.chd.hao.manager.util.DateUtil;
+import com.chd.hao.manager.util.MailUtil;
 import org.apache.ibatis.executor.ReuseExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +32,9 @@ public class ParkController {
 
     @Resource(name = "parkService")
     private IParkService parkService;
+
+    @Resource(name = "reserveService")
+    private IReserveService reserveService;
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     public String getAll(Map<String, Object> map, boolean guide) {
@@ -46,6 +53,7 @@ public class ParkController {
         AdminModel user = (AdminModel) request.getSession().getAttribute("user");
         model.setSponsor(user);
         model.setTime(DateUtil.format(new Date()));
+        model.setStatus(0);
         parkService.add(model);
         return "redirect:/park/admin";
     }
@@ -117,5 +125,60 @@ public class ParkController {
     @RequestMapping("/reserve")
     public String reserve() {
         return "redirect:";
+    }
+
+//    停用车库
+    @ResponseBody
+    @RequestMapping(value = "/stopService", method = RequestMethod.GET)
+    public String stopService(int pid) {
+        //改变状态为1
+        parkService.updateStatus(1, pid);
+
+        // 此车库的所有预定信息
+        List<Integer> reserved = reserveService.getReservedId(pid);
+        if(reserved.size() != 0 ) {
+
+            for(int i : reserved) {
+                ReserveModel reserveModel = null;
+                String to = "";
+                if(reserveService.getUserByRid(i) != null) {
+                    reserveModel = reserveService.getReserveWithParkAndUser(i);
+                    to = reserveModel.getUser().getEmail();
+                } else {
+                    reserveModel = reserveService.getReserveWithParkAndAdmin(i);
+                    to = reserveModel.getAdmin().getEmail();
+                }
+
+
+                String message = "您预定的车库已停用!" + "\n\n" + "车库名称：name" + "\n" +
+                        "预定日期：reservetime" + "\n" + "预定时间：start -- end" + "\n" + "车位编号：parknum"
+                        + "\n\n" + "对您带来的不便，我们深感抱歉。如有需要，请您预定其他车位!";
+
+                try {
+                    MailUtil.sendMail(to, "车库信息变更", message.replace("name", reserveModel.getPark().getName())
+                            .replace("reservetime", reserveModel.getReservetime()).replace("start", reserveModel.getStart())
+                            .replace("end", reserveModel.getEnd()).replace("parknum", String.valueOf(reserveModel.getParknum())));
+                } catch (MessagingException e) {
+                    System.out.println("邮件发送失败!");
+                    e.printStackTrace();
+                }
+
+                reserveService.updateStatus(i, "已失效");
+            }
+        }
+
+        return "success";
+    }
+
+    //启用车库
+    @ResponseBody
+    @RequestMapping(value = "/startService", method = RequestMethod.GET)
+    public String startService(int pid) {
+
+        parkService.updateStatus(0, pid);
+
+        reserveService.deleteByParkId(pid);
+
+        return "success";
     }
 }

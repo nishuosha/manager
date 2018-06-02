@@ -62,6 +62,12 @@
                 url: '/reserve/getAdvice?pid=' + id + '&time=' + time,
                 type: 'GET',
                 success: function(ret) {
+
+                    if(ret == null) {
+                        alert("暂无空闲车位!");
+                        return;
+                    }
+
                     $("#d").attr('hidden', "hidden");
                     $("#adviceModel").modal();
                     $('#ar').html(ret['A']);

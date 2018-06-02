@@ -29,7 +29,7 @@
                     <li><a href="#" target="main"><i class="fa fa-user"></i>请登录</a></li>
                 </#if>
             <#else>
-                <li><a href="#" target="main"><i class="fa fa-user"></i>请登录</a></li>
+                <li><a href="#"><i class="fa fa-user"></i>请登录</a></li>
             </#if>
         </ul>
     </span>

@@ -20,6 +20,7 @@ public class ParkModel {
     private int[][] num; //车位编号
     private String time; //创建时间
     private String description; //描述
+    private int status; //车库状态 0表示运行中，1表示已停止服务
     private AdminModel sponsor; //创建者
 
 
@@ -27,6 +28,10 @@ public class ParkModel {
 
         this.count = length * width;
         this.free = count;
+    }
+
+    public void setId(int pid) {
+        this.pid = pid;
     }
 
     public int getId() {
@@ -109,6 +114,14 @@ public class ParkModel {
         return description;
     }
 
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
     public void setSponsor(AdminModel sponsor) {
         this.sponsor = sponsor;
     }
@@ -117,6 +130,7 @@ public class ParkModel {
         return sponsor;
     }
 
+    //设定入口坐标
     public Map<String, String> getCoordinate() {
         this.coordinate = new HashMap<>();
         coordinate.put("A", "0,0");

@@ -21,10 +21,21 @@ public interface IReserveService {
 
     public int deleteById(int rid);
 
+    public int deleteByParkId(int pid);
+
     public int updateStatus(int rid, String status);
 
     public List<Integer> getOutOfDateId();
 
     public ReserveModel selectById(int rid);
 
+    public List<Integer> getReservedId(int pid);
+
+    public ReserveModel getReserveWithParkAndUser(int rid);
+
+    public ReserveModel getReserveWithParkAndAdmin(int rid);
+
+    public Integer getUserByRid(int rid);
+
+    public Integer getAdminByRid(int rid);
 }

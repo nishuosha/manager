@@ -22,6 +22,8 @@ public interface IParkDAO {
 
     public int update(ParkModel model);
 
+    public int updateStatus(int status, int pid);
+
     public int delete(int id);
 
     public List<ParkModel> selectByCondition(ParkModel model);

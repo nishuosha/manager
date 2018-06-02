@@ -90,14 +90,41 @@
                 url: '/reserve/getNumByParkId?pid=' + id + '&time=' + date,
                 type: 'GET',
                 success: function(ret) {
+                    $('#reserveBtn').removeAttr('disabled');
                     $("#freenum").val(ret.length);
-                    for(var i = 0 ; i < ret.length ; i ++) {
+
+                    if(ret.length == 0) {
+
+                        if(!confirm("当前尚无空闲车位,是否开启车位提醒?")) {
+                            return ;
+                        }
+
+                        remindFree(id, date);
+
+                        alert('有空余车位时，我们将通过邮件提醒!');
+                        $('#reserveBtn').attr("disabled", 'disabled');
+                        return ;
+                    }
+
+                  for(var i = 0 ; i < ret.length ; i ++) {
                         $("#parknum").append("<option value='" + ret[i] + "'>" + ret[i] + "</option>");
                     }
                 }
             });
         }
 
+
+        function remindFree(id, date) {
+
+            $.ajax({
+                url: '/reserve/remindFree?pid=' + id + "&time=" + date,
+                type: 'GET',
+                success: function() {
+
+                }
+            });
+
+        }
 
     </script>
 
@@ -230,7 +257,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-success" onclick="reserve();" >提交</button>
+                <button type="button" class="btn btn-success" id="reserveBtn" onclick="reserve();" >提交</button>
             </div>
         </div>
     </div>

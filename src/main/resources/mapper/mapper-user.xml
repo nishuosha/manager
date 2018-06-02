@@ -1,41 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--~
-  ~ Copyright (c) 2010-2015 meituan.com
-  ~ All rights reserved.
-  -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="user">
-    
+    <!--获取所有用户信息-->
     <select id="selectAll" resultType="com.chd.hao.manager.model.UserModel">
         SELECT * FROM `user`
     </select>
-
+    <!--根据用户id获取用户信息-->
     <select id="selectById" parameterType="int" resultType="com.chd.hao.manager.model.UserModel">
         SELECT * FROM `user` WHERE uid = #{id}
     </select>
-
+    <!--根据用户名获取用户信息-->
     <select id="selectByName" parameterType="String" resultType="com.chd.hao.manager.model.UserModel">
         SELECT * FROM `user` WHERE username = #{username}
     </select>
-
+    <!--获取用户数量-->
     <select id="count" resultType="int">
         SELECT count(*) FROM `user`
     </select>
-
+    <!--插入一条用户信息-->
     <insert id="insert" parameterType="com.chd.hao.manager.model.UserModel">
         INSERT INTO `user` (username, userpwd, phone, email, registertime) VALUES (#{username}, #{userpwd}, #{phone}, #{email}, #{registertime})
     </insert>
-
+    <!--根据用户id删除一条用户信息-->
     <delete id="deleteById" parameterType="int" >
         DELETE FROM `user` WHERE uid = #{id}
     </delete>
-
+    <!--根据用户id更新用户信息-->
     <update id="update" parameterType="com.chd.hao.manager.model.UserModel">
         UPDATE `user` SET username = #{username}, userpwd = #{userpwd}, phone = #{phone}, email = #{email} WHERE uid = #{id}
     </update>
-    
+    <!--根据用户名查询用户密码-->
     <select id="selectPwd" parameterType="String" resultType="String">
         SELECT userpwd FROM `user` WHERE username = #{username}
     </select>

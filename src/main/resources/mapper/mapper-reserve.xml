@@ -85,6 +85,10 @@
     <delete id="deleteAll" >
         DELETE FROM `reserve`
     </delete>
+    
+    <delete id="deleteByParkId" parameterType="int" >
+        DELETE FROM `reserve` WHERE parkid = #{id}
+    </delete>
 
     <update id="update" parameterType="com.chd.hao.manager.model.ReserveModel" >
 
@@ -93,10 +97,83 @@
     <update id="updateStatus" parameterType="map">
         UPDATE `reserve` SET status = #{status} WHERE rid = #{id}
     </update>
-    
+
+    <!--查询过期的预定信息-->
     <select id="selectOutOfDate" parameterType="String" resultType="int">
 
-        SELECT rid FROM `reserve` WHERE reservetime &lt; #{now} and status != '已过期'
+        SELECT rid FROM `reserve` WHERE reservetime &lt; #{now} and status = '已预定'
+
+    </select>
+
+    <!--查询预定已停止服务的车库的预定信息-->
+    <select id="selectReservedId" parameterType="int" resultType="int">
+        SELECT rid FROM `reserve` WHERE parkid = #{id} AND status = '已预定'
+    </select>
+
+    <select id="selectUserByRid" parameterType="int" resultType="int" >
+        SELECT userid FROM `reserve` WHERE rid = #{id}
+    </select>
+
+    <select id="selectAdminByRid" parameterType="int" resultType="int" >
+        SELECT adminid FROM `reserve` WHERE rid = #{id}
+    </select>
+
+    <!--预定表，车库表，个人表三遍联合映射-->
+    <resultMap id="findReserveWithParkAndUser" type="com.chd.hao.manager.model.ReserveModel">
+
+        <id column="rid" property="rid" />
+        <result column="reservetime" property="reservetime" />
+        <result column="start" property="start" />
+        <result column="end" property="end" />
+        <result column="parknum" property="parknum" />
+
+        <association property="user" javaType="com.chd.hao.manager.model.UserModel">
+            <id column="uid" property="uid" />
+            <result column="email" property="email" />
+        </association>
+
+        <association property="park" javaType="com.chd.hao.manager.model.ParkModel" >
+            <id column="pid" property="pid" />
+            <result column="name" property="name" />
+        </association>
+
+    </resultMap>
+
+    <!--预定表，车库表，个人表三遍联合查询-->
+    <select id="selectReserveWithParkAndUser" parameterType="int" resultMap="findReserveWithParkAndUser">
+
+        SELECT r.rid, r.reservetime, r.start, r.end, r.parknum, u.uid, u.email, p.pid, p.name FROM `reserve` r LEFT JOIN
+        `user` u ON r.userid = u.uid LEFT JOIN `park` p ON r.parkid = p.pid WHERE r.rid = #{id}
+
+    </select>
+
+
+    <!--预定表，车库表，商家表三遍联合映射-->
+    <resultMap id="findReserveWithParkAndAdmin" type="com.chd.hao.manager.model.ReserveModel">
+
+        <id column="rid" property="rid" />
+        <result column="reservetime" property="reservetime" />
+        <result column="start" property="start" />
+        <result column="end" property="end" />
+        <result column="parknum" property="parknum" />
+
+        <association property="admin" javaType="com.chd.hao.manager.model.AdminModel">
+            <id column="aid" property="aid" />
+            <result column="email" property="email" />
+        </association>
+
+        <association property="park" javaType="com.chd.hao.manager.model.ParkModel" >
+            <id column="pid" property="pid" />
+            <result column="name" property="name" />
+        </association>
+
+    </resultMap>
+
+    <!--预定表，车库表，商家表三遍联合查询-->
+    <select id="selectReserveWithParkAndAdmin" parameterType="int" resultMap="findReserveWithParkAndAdmin">
+
+        SELECT r.rid, r.reservetime, r.start, r.end, r.parknum, a.aid, a.email, p.pid, p.name FROM `reserve` r LEFT JOIN
+        `admin` a ON r.userid = a.aid LEFT JOIN `park` p ON r.parkid = p.pid WHERE r.rid = #{id}
 
     </select>
 

@@ -24,7 +24,7 @@ public class DbConfig {
         // 基本属性 url、user、password
         dataSource.setUrl("jdbc:mysql://localhost:3306/bishe?characterEncoding=UTF8");
         dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setPassword("1234");
 
         dataSource.setTimeBetweenLogStatsMillis(60000);
         return dataSource;

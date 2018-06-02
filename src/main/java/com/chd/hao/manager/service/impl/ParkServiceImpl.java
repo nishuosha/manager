@@ -54,6 +54,11 @@ public class ParkServiceImpl implements IParkService {
     }
 
     @Override
+    public int updateStatus(int status, int pid) {
+        return parkDAO.updateStatus(status, pid);
+    }
+
+    @Override
     public int add(ParkModel model) {
         return parkDAO.insert(model);
     }

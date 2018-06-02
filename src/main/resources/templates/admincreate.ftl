@@ -26,20 +26,40 @@
 
     <script type="text/javascript">
 
+        function stopService(pid) {
 
-    </script>
-
-    <script type="text/javascript">
-
-        $(function(){
-            var num = (page - 1) * $("#showNum").val() + 1;
-            var len = page * $("#showNum").val();
-            var temp = 1;
-            for(var i = num;i<=len;i++){
-                $('table tr:eq('+temp+') td:first').text(i);
-                temp = temp + 1;
+            if(!confirm("确认停用此车库?")){
+                return ;
             }
-        });
+
+            $.ajax({
+                url: '/park/stopService?pid=' + pid,
+                type: 'GET',
+                success: function(ret) {
+                    if(ret == 'success') {
+                        window.location.href = "/park/admin";
+                    }
+                }
+            });
+        }
+
+        function startService(pid) {
+
+            if(!confirm("确认重新启用此车库，以前的预定信息将被清空?")) {
+                return ;
+            }
+
+            $.ajax({
+                url: '/park/startService?pid=' + pid,
+                type: 'GET',
+                success: function(ret) {
+                    if(ret == 'success') {
+                        window.location.href = "/park/admin";
+                    }
+                }
+
+            });
+        }
 
     </script>
 
@@ -60,13 +80,15 @@
             <table class="table table-striped table-bordered table-hover" style="TABLE-LAYOUT: fixed;">
 
                 <tr>
-                    <th style="width= 10%">编号</th>
+                    <th style="width= 5%">编号</th>
                     <th style="width: 15%">名称</th>
                     <th style="width: 20%">地址</th>
                     <th style="width: 15%">创建时间</th>
-                    <th style="width: 15%">入口数量</th>
-                    <th style="width: 20%">车位数量</th>
+                    <th style="width: 10%">入口数量</th>
+                    <th style="width: 10%">车位数量</th>
                     <th style="width: 10%">描述</th>
+                    <th style="width: 10%">运行状态</th>
+                    <th style="width: 5%">操作</th>
                 </tr>
                 <#assign x=0>
                 <#list parks as item>
@@ -79,6 +101,20 @@
                     <td>${item.enterCount!}</td>
                     <td>${item.count!}</td>
                     <td>${item.description!}</td>
+                    <td>
+                        <#if item.status == 0>
+                            <span style="color: green">运行中</span>
+                        <#else>
+                            <span style="color: red">停止服务</span>
+                        </#if>
+                    </td>
+                    <td>
+                        <#if item.status == 0>
+                            <button class="btn btn-danger btn-small" onclick="stopService(${item.id!});">停止</button>
+                        <#else>
+                            <button class="btn btn-small btn-success" onclick="startService(${item.id!});">启用</button>
+                        </#if>
+                    </td>
                 </tr>
                 </#list>
 

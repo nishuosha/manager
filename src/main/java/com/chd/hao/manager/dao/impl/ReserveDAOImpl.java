@@ -67,6 +67,11 @@ public class ReserveDAOImpl implements IReserveDAO {
     }
 
     @Override
+    public int deleteByParkId(int pid) {
+        return sqlSessionTemplate.delete("reserve.deleteByParkId", pid);
+    }
+
+    @Override
     public int updateStatus(int rid, String status) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", rid);
@@ -82,5 +87,30 @@ public class ReserveDAOImpl implements IReserveDAO {
     @Override
     public ReserveModel selectById(int rid) {
         return (ReserveModel) sqlSessionTemplate.selectOne("reserve.selectById", rid);
+    }
+
+    @Override
+    public List<Integer> getReservedId(int pid) {
+        return sqlSessionTemplate.selectList("reserve.selectReservedId", pid);
+    }
+
+    @Override
+    public ReserveModel getReserveWithParkAndUser(int rid) {
+        return (ReserveModel) sqlSessionTemplate.selectOne("reserve.selectReserveWithParkAndUser", rid);
+    }
+
+    @Override
+    public ReserveModel getReserveWithParkAndAdmin(int rid) {
+        return (ReserveModel) sqlSessionTemplate.selectOne("reserve.selectReserveWithParkAndAdmin", rid);
+    }
+
+    @Override
+    public Integer getUserByRid(int rid) {
+        return (Integer) sqlSessionTemplate.selectOne("reserve.selectUserByRid", rid);
+    }
+
+    @Override
+    public Integer getAdminByRid(int rid) {
+        return (Integer) sqlSessionTemplate.selectOne("reserve.selectAdminByRid", rid);
     }
 }
