@@ -151,7 +151,7 @@ public class ParkController {
 
 
                 String message = "您预定的车库已停用!" + "\n\n" + "车库名称：name" + "\n" +
-                        "预定日期：reservetime" + "\n" + "预定时间：start -- end" + "\n" + "车位编号：parknum"
+                        "预定日期：reservetime" + "\n" + "预定时间：start:00 —— end:00" + "\n" + "车位编号：parknum"
                         + "\n\n" + "对您带来的不便，我们深感抱歉。如有需要，请您预定其他车位!";
 
                 try {

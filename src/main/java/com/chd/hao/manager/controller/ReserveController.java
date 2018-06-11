@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -64,12 +65,13 @@ public class ReserveController {
         ParkModel pm = rm.getPark();
 
         String message = "您取消了预定的车位!" + "\n\n" + "车库名称：name" + "\n" + "车库地址：address" + "\n" +
-                "预定日期：reservetime" + "\n" + "车位编号：parknum";
+                "预定日期：reservetime" + "\n" + "预定时间：start:00 —— end:00" + "\n" + "车位编号：parknum";
 
 
         try {
             MailUtil.sendMail(to, "预定信息变更", message.replace("name", pm.getName())
                     .replace("address", pm.getAddress()).replace("reservetime", rm.getReservetime())
+                    .replace("start", rm.getStart()).replace("end", rm.getEnd())
                     .replace("parknum", String.valueOf(rm.getParknum())));
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -81,9 +83,39 @@ public class ReserveController {
 
     @ResponseBody
     @RequestMapping(value = "/getNumByParkId", method = RequestMethod.GET)
-    public List<Integer> getNumByParkId(int pid, String time) {
-        return getNumBypid(pid, time);
+    public List<Integer> getNumByParkId(int pid, String time, int start, int end) {
+//        return getNumBypid(pid, time);
+        return getNumByPidAndTime(pid, time, start, end);
     }
+
+    //根据车库id，预定日期，预定时间获取空闲车位list
+    public List<Integer> getNumByPidAndTime(int pid, String time, int start, int end) {
+        //先根据车库id和日期获取空闲车位
+        List<Integer> freeList = getNumBypid(pid, time);
+        //根据车库id 分组获取已预订的车位的时间段
+        List<ReserveModel> reservedGroup = reserveService.getGrouped(pid, time);
+        for(ReserveModel model : reservedGroup) {
+            //时间段数组
+            String[] timeparts = model.getDatetime().split(";");
+            int size = timeparts.length;
+            int temp = 0;
+            for(String s : timeparts) {
+                int startInt = Integer.valueOf(s.split(",")[0]);
+                int endInt = Integer.valueOf(s.split(",")[1]);
+
+                if(startInt >= end || endInt <= start) {
+                    temp ++;
+                }
+            }
+
+            if(temp == size) {
+                freeList.add(model.getParknum());
+            }
+        }
+        Collections.sort(freeList);
+        return freeList;
+    }
+
 
     //根据车库id和预定时间获取空闲车位list
     public List<Integer> getNumBypid(int pid, String time) {
@@ -129,14 +161,16 @@ public class ReserveController {
         String to = "";
         if(o instanceof UserModel) {
             to = ((UserModel) o).getEmail();
-            String ret = checkUserReserved(((UserModel) o).getId(), model.getReservetime());
+//            String ret = checkUserReserved(((UserModel) o).getId(), model.getReservetime());
+            String ret = "";
             if("exist".equals(ret)) {
                 return ret;
             }
             model.setUser((UserModel) o);
         } else {
             to = ((AdminModel) o).getEmail();
-            String ret = checkAdminReserved(((AdminModel) o).getId(), model.getReservetime());
+//            String ret = checkAdminReserved(((AdminModel) o).getId(), model.getReservetime());
+            String ret = "";
             if("exist".equals(ret)) {
                 return ret;
             }
@@ -146,24 +180,87 @@ public class ReserveController {
         ParkModel p = parkService.getById(Integer.valueOf(pid));
         model.setPark(p);
 
+        //发送邮件
         String enterName = getMinEnter(p.getCoordinate(), model.getParknum(), p.getLength());
 
         String message = "您选择的车位预定成功!" + "\n\n" + "车库名称：name" + "\n" + "车库地址：address" + "\n" +
-                         "预定日期：reservetime" + "\n" + "车位编号：parknum" + "\n" + "最近入口：enterName";
+                         "预定日期：reservetime" + "\n" + "预定时间：start:00 —— end:00" + "\n" +
+                         "车位编号：parknum" + "\n" + "最近入口：enterName";
 
         model.setCreatetime(DateUtil.format(new Date()));
         model.setStatus("已预定");
 
+        //添加数据
+        reserveService.add(model);
+        //发送邮件
         try {
             MailUtil.sendMail(to, "预定信息", message.replace("name", p.getName())
                     .replace("address", p.getAddress()).replace("reservetime", model.getReservetime())
+                    .replace("start", model.getStart()).replace("end", model.getEnd())
                     .replace("parknum", String.valueOf(model.getParknum())).replace("enterName", enterName));
 
         } catch (MessagingException e) {
             e.printStackTrace();
             System.out.println("邮件发送失败!");
         }
-        return reserveService.add(model) == 1 ? "success" : "";
+
+
+        String m2 = "您预定的车位即将到期!" + "\n\n" + "车库名称：name" + "\n" + "车库地址：address" + "\n" +
+                "预定日期：reservetime" + "\n" + "预定时间：start:00 —— end:00" + "\n" +
+                "车位编号：parknum" + "\n\n" + "请您及时移动车辆，以免超时扣费!" ;
+
+        Timer timer = new Timer();
+        String finalTo = to;
+
+        //提前15分钟邮件提醒
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    MailUtil.sendMail(finalTo, "预定信息提醒", m2.replace("name", p.getName())
+                            .replace("address", p.getAddress()).replace("reservetime", model.getReservetime())
+                            .replace("start", model.getStart()).replace("end", model.getEnd())
+                            .replace("parknum", String.valueOf(model.getParknum())));
+                } catch (MessagingException e) {
+                    System.out.println("邮件发送失败!");
+                    e.printStackTrace();
+                }
+            }
+        };
+
+
+        String m3 = "您预定的车位已到期!" + "\n\n" + "车库名称：name" + "\n" + "车库地址：address" + "\n" +
+                "预定日期：reservetime" + "\n" + "预定时间：start:00 —— end:00" + "\n" +
+                "车位编号：parknum" + "\n\n" + "谢谢您的使用，祝您生活愉快!" ;
+
+        //预定时间到了提醒
+        TimerTask task1 = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    reserveService.updateStatus(model.getId(), "已过期");
+                    MailUtil.sendMail(finalTo, "预定信息提醒", m3.replace("name", p.getName())
+                            .replace("address", p.getAddress()).replace("reservetime", model.getReservetime())
+                            .replace("start", model.getStart()).replace("end", model.getEnd())
+                            .replace("parknum", String.valueOf(model.getParknum())));
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+                timer.cancel();
+            }
+        };
+
+        String end = String.valueOf(Integer.valueOf(model.getEnd()) - 1);
+        String datetime1 = model.getReservetime() + " " + end + ":45:00";
+        String datetime2 = model.getReservetime() + " " + model.getEnd() + ":00:00";
+        try {
+            timer.schedule(task, DateUtil.format3(datetime1));
+            timer.schedule(task1, DateUtil.format3(datetime2));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return "success";
     }
 
     private String getMinEnter(Map<String, String> coordinate, int parknum, int length) {
@@ -203,9 +300,10 @@ public class ReserveController {
 
     @ResponseBody
     @RequestMapping(value = "/getAdvice", method = RequestMethod.GET)
-    public Map<String, Integer> getAdvice(int pid, String time) {
+    public Map<String, Integer> getAdvice(int pid, String time, int start, int end) {
 
-        List<Integer> freelist = getNumBypid(pid, time);
+//        List<Integer> freelist = getNumBypid(pid, time);
+        List<Integer> freelist = getNumByPidAndTime(pid, time, start, end);
         if(freelist.size() == 0) {
             return null;
         }
@@ -216,7 +314,7 @@ public class ReserveController {
 
     @ResponseBody
     @RequestMapping(value = "/remindFree", method = RequestMethod.GET)
-    public String remindFree(int pid, String time, HttpServletRequest request) {
+    public String remindFree(int pid, String time, String start, String end, HttpServletRequest request) {
 
         Object o = request.getSession().getAttribute("user");
         String to = "";
@@ -235,13 +333,15 @@ public class ReserveController {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                List<Integer> reserveList = reserveService.getNumByParkId(pid, time);
-                if(reserveList.size() != total) {
+//                List<Integer> reserveList = reserveService.getNumByParkId(pid, time);
+                List<Integer> freeList = getNumByPidAndTime(pid, time, Integer.valueOf(start), Integer.valueOf(end));
+                if(freeList.size() != 0) {
                     System.out.println("有空位了");
 
                     try {
-                        MailUtil.sendMail(finalTo, "车位提醒", "车库名称: " + pm.getName() + "\n"
+                        MailUtil.sendMail(finalTo, "车位提醒", "车位提醒!" + "\n\n" + "车库名称: " + pm.getName() + "\n"
                                         + "车库地址: " + pm.getAddress()  + "日期: " + time
+                                        + "\n" + "时间段：" + start + ":00 —— " + end + ":00"
                                         + "\n" + "消息: 已有空余车位,请及时预定!");
                     } catch (MessagingException e) {
                         e.printStackTrace();
@@ -251,9 +351,14 @@ public class ReserveController {
                     timer.cancel();
                     return ;
                 }
+
+                Calendar c = Calendar.getInstance();
+                if(c.get(Calendar.HOUR_OF_DAY) >= Integer.valueOf(end)) {
+                    timer.cancel();
+                }
+
             }
         };
-
         timer.scheduleAtFixedRate(task, 1000*10, 1000*10);
         return "";
     }

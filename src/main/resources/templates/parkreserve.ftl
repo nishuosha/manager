@@ -44,6 +44,13 @@
         }
 
         function reserve() {
+
+            var parknum = $("#parknum").val();
+            if(parknum == null) {
+                alert("请选择车位!");
+                return ;
+            }
+
             var d = {};
             var t = $('#reserveForm').serializeArray();
             $.each(t, function() {
@@ -84,10 +91,13 @@
                 return ;
             }
 
+            var start = $("#start").val();
+            var end = $("#end").val();
+
             var id = $("#reserveForm input[type='hidden']").val();
 
             $.ajax({
-                url: '/reserve/getNumByParkId?pid=' + id + '&time=' + date,
+                url: '/reserve/getNumByParkId?pid=' + id + '&time=' + date + '&start=' + start + '&end=' + end,
                 type: 'GET',
                 success: function(ret) {
                     $('#reserveBtn').removeAttr('disabled');
@@ -95,11 +105,11 @@
 
                     if(ret.length == 0) {
 
-                        if(!confirm("当前尚无空闲车位,是否开启车位提醒?")) {
+                        if(!confirm("当前时间段暂无空闲车位,是否开启车位提醒?")) {
                             return ;
                         }
 
-                        remindFree(id, date);
+                        remindFree(id, date, start, end);
 
                         alert('有空余车位时，我们将通过邮件提醒!');
                         $('#reserveBtn').attr("disabled", 'disabled');
@@ -114,10 +124,10 @@
         }
 
 
-        function remindFree(id, date) {
+        function remindFree(id, date, start, end) {
 
             $.ajax({
-                url: '/reserve/remindFree?pid=' + id + "&time=" + date,
+                url: '/reserve/remindFree?pid=' + id + "&time=" + date + "&start=" + start + "&end=" + end,
                 type: 'GET',
                 success: function() {
 
@@ -223,10 +233,52 @@
                 <form class="form-horizontal" id="reserveForm">
                     <input type="hidden" value="" name="parkid" >
                     <div class="form-group">
-                        <label for="" class="col-sm-2 control-label">预定时间：</label>
+                        <label for="" class="col-sm-2 control-label">预定日期：</label>
                         <div class="col-sm-10">
                             <input type='text' class='form-control date-picker' id='reservetime' name='reservetime'>
                             <input type="button" value="GET" class="btn btn-small btn-success" onclick="getFree()" />
+                        </div>
+                    </div><br>
+
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">开始时间：</label>
+                        <div class="col-sm-10">
+                            <select id="start" name="start">
+                                <option value="8">08</option>
+                                <option value="9">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                            </select>
+                        </div>
+                    </div><br>
+
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">结束时间：</label>
+                        <div class="col-sm-10">
+                            <select id="end" name="end">
+                                <option value="9">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                            </select>
                         </div>
                     </div><br>
 

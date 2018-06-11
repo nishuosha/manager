@@ -4,12 +4,15 @@ import com.chd.hao.manager.model.AdminModel;
 import com.chd.hao.manager.model.UserModel;
 import com.chd.hao.manager.service.IAdminService;
 import com.chd.hao.manager.util.DateUtil;
+import com.chd.hao.manager.util.MailUtil;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -86,6 +89,30 @@ public class AdminController {
         AdminModel a = (AdminModel) request.getSession().getAttribute("user");
         map.put("user", a);
         return "admininfo";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/findAdminPwd", method = RequestMethod.GET)
+    public String findPwd(String adminName, String email) {
+
+        AdminModel a = adminService.getAdminByName(adminName);
+
+        if (a == null) {
+            return "0";
+        }
+
+        if(!a.getEmail().equals(email)) {
+            return "1";
+        }
+
+        try {
+            MailUtil.sendMail(email, "密码找回", "您的密码是：" + a.getAdminpwd());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+        return "2";
+
     }
 
 }

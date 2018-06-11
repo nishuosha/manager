@@ -67,7 +67,6 @@
                                     alert("注册成功，请登陆!");
                                     $("#register").modal('hide');
                                     $("#login").modal();
-
                                 }
                              }
                          });
@@ -184,6 +183,76 @@
                          return ;
                      } else {
                          window.location.href = "/";
+                     }
+                 }
+             });
+         }
+
+//         个人密码找回
+         function findUserPwd() {
+
+             var username = $("#findUserPwd input[name='username']").val();
+             var email = $("#findUserPwd input[name='email']").val();
+
+             if(username.length == 0 || email.length == 0) {
+                 alert("请输入正确的信息!");
+                 return ;
+             }
+
+             $.ajax({
+
+                 url: "/user/findUserPwd?username=" + username + "&email=" + email,
+                 type: 'GET',
+                 success: function(ret) {
+                     if(ret == '0') {
+                         alert("用户名不存在!");
+                         return ;
+                     }
+
+                     if(ret == '1') {
+                         alert("用户名与邮箱不匹配!");
+                         return ;
+                     }
+
+                     if(ret == '2') {
+                         alert("您的密码已发送至邮箱，请查收!");
+                         $("#findUserPwd").modal('hide');
+                         $("#login").modal();
+                     }
+                 }
+             });
+         }
+
+         //         商家密码找回
+         function findAdminPwd() {
+
+             var adminName = $("#findAdminPwd input[name='adminName']").val();
+             var email = $("#findAdminPwd input[name='email']").val();
+
+             if(adminName.length == 0 || email.length == 0) {
+                 alert("请输入正确的信息!");
+                 return ;
+             }
+
+             $.ajax({
+
+                 url: "/admin/findAdminPwd?adminName=" + adminName + "&email=" + email,
+                 type: 'GET',
+                 success: function(ret) {
+                     if(ret == '0') {
+                         alert("用户名不存在!");
+                         return ;
+                     }
+
+                     if(ret == '1') {
+                         alert("用户名与邮箱不匹配!");
+                         return ;
+                     }
+
+                     if(ret == '2') {
+                         alert("您的密码已发送至邮箱，请查收!");
+                         $("#findUserPwd").modal('hide');
+                         $("#login").modal();
                      }
                  }
              });
@@ -325,6 +394,7 @@
                          <button class="btn btn-danger" data-dismiss="modal">取消</button>
                      </div>
                      <a href="" data-toggle="modal" data-dismiss="modal" data-target="#register">还没有账号？点我注册</a>
+                     <a href="" style="float: right;" data-toggle="modal" data-dismiss="modal" data-target="#findUserPwd">忘记密码？点我找回</a>
                  </form>
              </div>
          </div>
@@ -358,6 +428,69 @@
                          <button class="btn btn-danger" data-dismiss="modal">取消</button>
                      </div>
                      <a href="" data-toggle="modal" data-dismiss="modal" data-target="#register1">还没有账号？点我注册</a>
+                     <a href="" style="float: right;" data-toggle="modal" data-dismiss="modal" data-target="#findAdminPwd">忘记密码？点我找回</a>
+                 </form>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <!-- 个人密码找回 -->
+ <div id="findUserPwd" class="modal fade">
+     <div class="modal-dialog">
+         <div class="modal-content">
+             <div class="modal-body">
+                 <button class="close" data-dismiss="modal">
+                     <span>&times;</span>
+                 </button>
+             </div>
+             <div class="modal-title">
+                 <h3 class="text-center">密码找回</h3>
+             </div>
+             <div class="modal-body">
+                 <form class="form-group" action="#">
+                     <div class="form-group">
+                         <label for="">用户名</label>
+                         <input class="form-control" type="text" name="username" placeholder="">
+                     </div>
+                     <div class="form-group">
+                         <label for="">注册时邮箱</label>
+                         <input class="form-control" type="text" name="email" placeholder="">
+                     </div>
+                     <div class="text-right">
+                         <input class="btn btn-primary" type="button" value="找回" onclick="findUserPwd();" />
+                     </div>
+                 </form>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <!-- 商家密码找回 -->
+ <div id="findAdminPwd" class="modal fade">
+     <div class="modal-dialog">
+         <div class="modal-content">
+             <div class="modal-body">
+                 <button class="close" data-dismiss="modal">
+                     <span>&times;</span>
+                 </button>
+             </div>
+             <div class="modal-title">
+                 <h3 class="text-center">密码找回</h3>
+             </div>
+             <div class="modal-body">
+                 <form class="form-group" action="#">
+                     <div class="form-group">
+                         <label for="">用户名</label>
+                         <input class="form-control" type="text" name="adminName" placeholder="">
+                     </div>
+                     <div class="form-group">
+                         <label for="">注册时邮箱</label>
+                         <input class="form-control" type="text" name="email" placeholder="">
+                     </div>
+                     <div class="text-right">
+                         <input class="btn btn-primary" type="button" value="找回" onclick="findAdminPwd();" />
+                     </div>
                  </form>
              </div>
          </div>

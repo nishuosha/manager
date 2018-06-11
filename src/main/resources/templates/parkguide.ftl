@@ -41,6 +41,9 @@
         function showAdvice(id) {
 
             var time = $("table input[name='time" + id + "']").val();
+            var start = $("table select[name='start" + id + "']").val();
+            var end = $("table select[name='end" + id + "']").val();
+
             if(time.length == 0) {
                 alert("请选择时间!");
                 return;
@@ -56,10 +59,9 @@
                 return ;
             }
 
-
             $.ajax({
 
-                url: '/reserve/getAdvice?pid=' + id + '&time=' + time,
+                url: '/reserve/getAdvice?pid=' + id + '&time=' + time + '&start=' + start + '&end=' + end,
                 type: 'GET',
                 success: function(ret) {
 
@@ -128,11 +130,13 @@
 
                                 <tr>
                                     <th style="width= 5%">编号</th>
-                                    <th style="width: 20%">名称</th>
-                                    <th style="width: 20%">地址</th>
-                                    <th style="width: 20%">车位数量</th>
-                                    <th style="width: 23%">时间 </th>
-                                    <th style="width: 12%">推荐 </th>
+                                    <th style="width: 15%">名称</th>
+                                    <th style="width: 15%">地址</th>
+                                    <th style="width: 10%">车位数量</th>
+                                    <th style="width: 15%">预定日期 </th>
+                                    <th style="width: 15%">开始时间 </th>
+                                    <th style="width: 15%">结束时间 </th>
+                                    <th style="width: 10%">推荐 </th>
                                 </tr>
 
                                 <#assign x=0>
@@ -144,6 +148,40 @@
                                     <td>${item.address!}</td>
                                     <td>${item.count!}</td>
                                     <td> <input type="text" class="date-picker" name="time${item.id}" /> </td>
+                                    <td>
+                                        <select name="start${item.id}">
+                                            <option value="8">08</option>
+                                            <option value="9">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="end${item.id}">
+                                            <option value="9">09</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                        </select>
+                                    </td>
                                     <td><a href="#" onclick="showAdvice(${item.id});" >推荐</a> </td>
                                 </tr>
                                 </#list>

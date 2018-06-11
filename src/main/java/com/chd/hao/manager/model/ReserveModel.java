@@ -10,6 +10,7 @@ public class ReserveModel {
     private String reservetime; //预定时间
     private String start; //开始时间
     private String end; // 结束时间
+    private String datetime; //多个时间段 ‘;’隔开
     private String description; //描述
     private UserModel user; //用户预定者
     private AdminModel admin; //商家预定者
@@ -103,5 +104,13 @@ public class ReserveModel {
 
     public String getEnd() {
         return end;
+    }
+
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
+    }
+
+    public String getDatetime() {
+        return datetime;
     }
 }

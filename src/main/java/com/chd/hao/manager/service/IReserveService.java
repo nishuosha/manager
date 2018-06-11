@@ -15,6 +15,10 @@ public interface IReserveService {
 
     public List<Integer> getNumByParkId(int pid, String reservetime);
 
+    public List<ReserveModel> getModelByParkId(int pid, String reservetime);
+
+    public List<ReserveModel> getGrouped(int pid, String reservetime);
+
     public Integer getByUserId(int uid, String reservetime);
 
     public Integer getByAdminId(int aid, String reservetime);

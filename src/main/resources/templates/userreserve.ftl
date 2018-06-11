@@ -28,17 +28,7 @@
     </script>
 
     <script type="text/javascript">
-
-        $(function(){
-            var num = (page - 1) * $("#showNum").val() + 1;
-            var len = page * $("#showNum").val();
-            var temp = 1;
-            for(var i = num;i<=len;i++){
-                $('table tr:eq('+temp+') td:first').text(i);
-                temp = temp + 1;
-            }
-        });
-
+        
         function removeR(id) {
             if(!confirm("确认取消?")){
                 return ;
@@ -72,8 +62,9 @@
 
                 <tr>
                     <th style="width= 5%">编号</th>
-                    <th style="width: 15%">创建时间</th>
-                    <th style="width: 15%">预定时间</th>
+                    <th style="width: 10%">创建时间</th>
+                    <th style="width: 10%">预定日期</th>
+                    <th style="width: 10%">预定时间</th>
                     <th style="width: 10%">描述</th>
                     <th style="width: 10%">车库名称</th>
                     <th style="width: 20%">车库地址</th>
@@ -89,6 +80,7 @@
                     <td>${x}</td>
                     <td>${item.createtime!}</td>
                     <td>${item.reservetime!}</td>
+                    <td>${item.start!}:00 —— ${item.end!}:00</td>
                     <td>${item.description!}</td>
                     <td>${item.park.name!}</td>
                     <td>${item.park.address!}</td>

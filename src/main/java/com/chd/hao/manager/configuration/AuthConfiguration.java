@@ -22,8 +22,9 @@ public class AuthConfiguration extends WebMvcConfigurerAdapter {
 
         registry.addInterceptor(interceptor()).addPathPatterns("/**")
                 .excludePathPatterns("/", "/frame/*", "/login/*", "/admin/add",
-                        "/admin/getByName", "/admin/getById",
-                        "/user/add", "/user/getByName", "/user/getById");
+                        "/admin/getByName", "/admin/getById", "/admin/findAdminPwd",
+                        "/user/add", "/user/getByName", "/user/getById",
+                        "/user/findUserPwd");
 
         super.addInterceptors(registry);
     }

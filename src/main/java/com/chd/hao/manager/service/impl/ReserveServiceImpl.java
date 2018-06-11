@@ -39,6 +39,16 @@ public class ReserveServiceImpl implements IReserveService {
     }
 
     @Override
+    public List<ReserveModel> getModelByParkId(int pid, String reservetime) {
+        return reserveDAO.selectModelByParkId(pid, reservetime);
+    }
+
+    @Override
+    public List<ReserveModel> getGrouped(int pid, String reservetime) {
+        return reserveDAO.selectGrouped(pid, reservetime);
+    }
+
+    @Override
     public Integer getByUserId(int uid, String reservetime) {
         return reserveDAO.selectByUserId(uid, reservetime);
     }

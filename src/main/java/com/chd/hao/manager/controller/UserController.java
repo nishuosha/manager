@@ -3,12 +3,14 @@ package com.chd.hao.manager.controller;
 import com.chd.hao.manager.model.UserModel;
 import com.chd.hao.manager.service.IUserService;
 import com.chd.hao.manager.util.DateUtil;
+import com.chd.hao.manager.util.MailUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -99,5 +101,28 @@ public class UserController {
         UserModel um = getUserById(u.getId());
         map.put("user", um);
         return "userinfo";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/findUserPwd", method = RequestMethod.GET)
+    public String findPwd(String username, String email) {
+
+        UserModel u = userService.getUserByName(username);
+
+        if(u == null) {
+            return "0";
+        }
+
+        if(!u.getEmail().equals(email)) {
+            return "1";
+        }
+
+        try {
+            MailUtil.sendMail(email, "密码找回", "您的密码是：" + u.getUserpwd());
+        } catch (MessagingException e) {
+            System.out.println("邮件发送失败!");
+            e.printStackTrace();
+        }
+        return "2";
     }
 }

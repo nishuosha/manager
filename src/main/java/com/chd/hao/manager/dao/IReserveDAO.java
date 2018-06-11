@@ -15,6 +15,10 @@ public interface IReserveDAO {
 
     public List<Integer> selectNumByParkId(int pid, String reservetime);
 
+    public List<ReserveModel> selectModelByParkId(int pid, String reservetime);
+
+    public List<ReserveModel> selectGrouped(int pid, String reservetime);
+
     public Integer selectByUserId(int uid, String reservetime);
 
     public Integer selectByAdminId(int aid, String reservetime);

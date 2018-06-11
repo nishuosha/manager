@@ -46,6 +46,23 @@ public class ReserveDAOImpl implements IReserveDAO {
     }
 
     @Override
+    public List<ReserveModel> selectModelByParkId(int pid, String reservetime) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", pid);
+        map.put("reservetime", reservetime);
+        return sqlSessionTemplate.selectList("reserve.selectModelByParkId", map);
+    }
+
+    @Override
+    public List<ReserveModel> selectGrouped(int pid, String reservetime) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", pid);
+        map.put("reservetime", reservetime);
+        return sqlSessionTemplate.selectList("reserve.selectGroup", map);
+    }
+
+
+    @Override
     public Integer selectByUserId(int uid, String reservetime) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", uid);

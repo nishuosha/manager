@@ -8,9 +8,9 @@
 
 <mapper namespace="reserve">
 
-    <insert id="insert" parameterType="com.chd.hao.manager.model.ReserveModel">
+    <insert id="insert" parameterType="com.chd.hao.manager.model.ReserveModel" useGeneratedKeys="true" keyProperty="id">
 
-        INSERT INTO `reserve` (createtime, reservetime, description,
+        INSERT INTO `reserve` (createtime, reservetime, start, end, description,
         <choose>
             <when test="user!=null">
                 userid,
@@ -20,7 +20,7 @@
             </when>
         </choose>
         parkid, parknum, status)
-        VALUES (#{createtime}, #{reservetime}, #{description},
+        VALUES (#{createtime}, #{reservetime}, #{start}, #{end}, #{description},
         <choose>
             <when test="user!=null">
                 #{user.uid},
@@ -38,6 +38,8 @@
         <id column="rid" property="rid" />
         <result column="createtime" property="createtime" />
         <result column="reservetime" property="reservetime" />
+        <result column="start" property="start" />
+        <result column="end" property="end" />
         <result column="rd" property="description" />
         <result column="parknum" property="parknum" />
         <result column="status" property="status" />
@@ -54,20 +56,30 @@
 
     <select id="selectUserReserve" parameterType="int" resultMap="selectReserveWithPark">
 
-        SELECT r.rid, r.createtime, r.reservetime, r.description rd, r.parknum, r.status,
+        SELECT r.rid, r.createtime, r.reservetime, r.start, r.end, r.description rd, r.parknum, r.status,
               p.pid, p.name, p.address, p.description pd FROM `reserve` r LEFT JOIN `park` p
               ON r.parkid = p.pid WHERE r.userid = #{id}
 
     </select>
 
     <select id="selectAdminReserve" parameterType="int" resultMap="selectReserveWithPark">
-        SELECT r.rid, r.createtime, r.reservetime, r.description rd, r.parknum, r.status,
+        SELECT r.rid, r.createtime, r.reservetime, r.start, r.end, r.description rd, r.parknum, r.status,
               p.pid, p.name, p.address, p.description pd FROM `reserve` r LEFT JOIN `park` p
               ON r.parkid = p.pid WHERE r.adminid = #{id}
     </select>
 
     <select id="selectNumByParkId" parameterType="map" resultType="int">
-        SELECT parknum FROM `reserve` WHERE parkid = #{id} AND reservetime = #{reservetime}
+        SELECT DISTINCT parknum FROM `reserve` WHERE parkid = #{id} AND reservetime = #{reservetime}
+    </select>
+
+    <select id="selectModelByParkId" parameterType="map" resultType="com.chd.hao.manager.model.ReserveModel">
+        SELECT * FROM `reserve` WHERE parkid = #{id} AND reservetime = #{reservetime}
+    </select>
+
+    <!--查询按照parknum分组后的预定数据-->
+    <select id="selectGroup" parameterType="map" resultType="com.chd.hao.manager.model.ReserveModel">
+        SELECT rid, parknum, GROUP_CONCAT(CONCAT(start, ',' , end) SEPARATOR ';') as datetime
+              FROM `reserve` WHERE reservetime = #{reservetime} AND parkid = #{id} GROUP BY parknum
     </select>
 
     <select id="selectByUserId" parameterType="map" resultType="Integer">
@@ -100,9 +112,7 @@
 
     <!--查询过期的预定信息-->
     <select id="selectOutOfDate" parameterType="String" resultType="int">
-
         SELECT rid FROM `reserve` WHERE reservetime &lt; #{now} and status = '已预定'
-
     </select>
 
     <!--查询预定已停止服务的车库的预定信息-->
@@ -178,7 +188,7 @@
     </select>
 
     <select id="selectById" parameterType="int" resultMap="selectReserveWithPark">
-        SELECT r.rid, r.createtime, r.reservetime, r.description rd, r.parknum, r.status,
+        SELECT r.rid, r.createtime, r.reservetime, r.start, r.end, r.description rd, r.parknum, r.status,
             p.pid, p.name, p.address, p.description pd FROM `reserve` r LEFT JOIN `park` p
             ON r.parkid = p.pid WHERE r.rid = #{id}
     </select>
