@@ -62,7 +62,7 @@
                     <th style="width= 10%">编号</th>
                     <th style="width: 15%">创建时间</th>
                     <th style="width: 10%">预定日期</th>
-                    <th style="width: 10%">预定日期</th>
+                    <th style="width: 10%">预定时间</th>
                     <th style="width: 15%">描述</th>
                     <th style="width: 20%">车库名称</th>
                     <th style="width: 5%">车位号码</th>

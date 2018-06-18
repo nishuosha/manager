@@ -340,9 +340,9 @@ public class ReserveController {
 
                     try {
                         MailUtil.sendMail(finalTo, "车位提醒", "车位提醒!" + "\n\n" + "车库名称: " + pm.getName() + "\n"
-                                        + "车库地址: " + pm.getAddress()  + "日期: " + time
+                                        + "车库地址: " + pm.getAddress()  + "\n" + "日期: " + time
                                         + "\n" + "时间段：" + start + ":00 —— " + end + ":00"
-                                        + "\n" + "消息: 已有空余车位,请及时预定!");
+                                        + "\n\n" + "消息: 已有空余车位,请及时预定!");
                     } catch (MessagingException e) {
                         e.printStackTrace();
                         System.out.println("邮件发送失败!");

@@ -13,7 +13,7 @@
 <body bgcolor="#3c8dbc" class="top">
     <img id="image_lg" src="/images/mt_logo.png">
     <a href="javascript:void(0);" onclick="showMonitor('index')" class="logo">
-                        <span class="logo-lg">停车位预定系统</span>
+                        <span class="logo-lg">停车位管理系统</span>
     </a>
 
     <span style="margin-right: 15px">

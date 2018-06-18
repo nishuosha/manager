@@ -266,8 +266,7 @@
      <li><a data-toggle="modal" data-target="#login1" href=""><span class="glyphicon glyphicon-log-in"></span> 商家登录</a></li>
  </ul>
 
- <h4>欢迎来到停车位管理系统</h4>
-
+ <h3>欢迎来到停车位诱导分配系统</h3>
 
  <!-- 个人注册窗口 -->
  <div id="register" class="modal fade" tabindex="-1">

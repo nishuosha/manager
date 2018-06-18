@@ -6,6 +6,6 @@
 
 <html>
 <body>
-    <p class="text-center">©2018 停车位预定系统</p>
+    <p class="text-center">©2018 停车位诱导分配系统</p>
 </body>
 </html>

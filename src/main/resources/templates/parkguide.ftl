@@ -65,7 +65,7 @@
                 type: 'GET',
                 success: function(ret) {
 
-                    if(ret == null) {
+                    if(ret['A'] == null) {
                         alert("暂无空闲车位!");
                         return;
                     }
